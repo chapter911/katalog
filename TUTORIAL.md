@@ -290,3 +290,33 @@ Masih di jendela Terminal cPanel, jalankan:
 3. Buka domain atau subdomain Anda di peramban web:
    👉 Aplikasi Laboratorium Peralatan Diagnostik Anda kini telah aktif (*Live*) di Shared Hosting!
 
+---
+
+### ⚠️ Troubleshooting Tambahan: Mengatasi "Internal Error / 500"
+
+Jika saat membuka domain muncul tulisan:
+> **Internal Error**
+> *The server encountered an unexpected condition which prevented it from fulfilling the request.*
+
+Lakukan langkah diagnosis & penanganan berikut:
+
+1. **Unggah Berkas [passenger_wsgi.py](file:///Users/agung_kesuma/katalog/passenger_wsgi.py) Terbaru:**
+   Versi terbaru [passenger_wsgi.py](file:///Users/agung_kesuma/katalog/passenger_wsgi.py) dilengkapi `os.execl` yang otomatis memaksa LiteSpeed/Passenger beralih dari Python bawaan server ke Python 3.10 milik virtualenv Anda.
+2. **Uji Jalankan `passenger_wsgi.py` via Terminal cPanel:**
+   Buka **Terminal** cPanel, lalu ketik perintah berikut untuk melihat pesan error tersembunyi:
+   ```bash
+   cd /home/agun9011/public_html/diagnostik.agungj.com
+   /home/agun9011/virtualenv/public_html/diagnostik.agungj.com/3.10/bin/python3 passenger_wsgi.py
+   ```
+   - Jika berhasil tanpa output error (bersih), berarti skrip siap jalan!
+   - Jika terdapat error (misal modul belum terpasang atau database salah), rincian error akan langsung muncul di terminal.
+3. **Cek Berkas Log Error di File Manager:**
+   Buka folder aplikasi di File Manager cPanel, periksa apakah terdapat berkas:
+   - `stderr.log`
+   - `error_log`
+   - `passenger_startup_error.log`
+   Buka atau baca isinya untuk melihat baris yang menyebabkan error.
+4. **Restart Aplikasi** di halaman **Setup Python App** cPanel setelah perbaikan.
+
+
+

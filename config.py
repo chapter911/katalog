@@ -1,10 +1,15 @@
 import os
 from dotenv import load_dotenv
 
-# Load .env file
-load_dotenv()
-
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+# Load .env file from BASE_DIR explicitly for WSGI/cPanel
+env_path = os.path.join(BASE_DIR, '.env')
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    load_dotenv()
+
 
 class Config:
     BASE_DIR = BASE_DIR
