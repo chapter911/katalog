@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Daftar Katalog &bull; Laboratorium Peralatan Diagnostik{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Page Header & Action Controls -->
+  <div class="page-header">
+    <div>
+      <h1 style="font-size: 2rem; margin-bottom: 0.35rem;">Daftar Item Katalog</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">
+        Jelajahi inventaris peralatan laboratorium diagnostik terkini.
+      </p>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <!-- Search Form -->
+      <form method="GET" action="{{ url_for('katalog.list_katalog') }}" class="search-box">
+        <input 
+          type="text" 
+          name="q" 
+          class="search-input" 
+          placeholder="Cari judul atau deskripsi..." 
+          value="{{ search_query or '' }}"
+        >
+        <button type="submit" class="btn btn-sm btn-primary" style="padding: 0.35rem 0.75rem;">
+          🔍
+        </button>
+        {% if search_query %}
+          <a href="{{ url_for('katalog.list_katalog') }}" class="btn btn-sm btn-secondary" style="padding: 0.35rem 0.65rem;" title="Reset Pencarian">
+            &times;
+          </a>
+        {% endif %}
+      </form>
+
+      <!-- Admin Add Button -->
+      {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('admin.create_katalog') }}" class="btn btn-primary">
+          <span>+</span> Input Item Baru
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Catalog Items Grid -->
+  {% if items %}
+    <div class="katalog-grid">
+      {% for item in items %}
+        <div class="katalog-card" data-href="{{ url_for('katalog.detail_katalog', id=item.id) }}" tabindex="0" role="link" aria-label="Lihat detail {{ item.judul }}">
+          <div class="katalog-thumb-wrapper">
+            {% if item.thumbnail_path %}
+              <img 
+                src="{{ url_for('static', filename='uploads/katalog/' + item.thumbnail_path) }}" 
+                alt="{{ item.judul }}" 
+                class="katalog-thumb" 
+                loading="lazy"
+              >
+            {% else %}
+              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-dim); background: #1e293b; font-size: 2.5rem;">
+                📦
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="katalog-body">
+            <h2 class="katalog-title" title="{{ item.judul }}">{{ item.judul }}</h2>
+            <p class="katalog-desc">{{ item.deskripsi }}</p>
+
+            <div class="katalog-footer">
+              <span style="font-size: 0.8rem; color: var(--text-dim); display: flex; align-items: center; gap: 0.35rem;">
+                <span style="color: var(--accent);">👉</span> Klik kartu untuk detail
+              </span>
+
+              {% if current_user.role == 'admin' %}
+                <div class="card-actions" style="display: flex; align-items: center; gap: 0.4rem;" onclick="event.stopPropagation();">
+                  <a href="{{ url_for('admin.edit_katalog', id=item.id) }}" class="btn btn-secondary btn-sm" title="Edit Item">
+                    ✏️ Edit
+                  </a>
+                  <form method="POST" action="{{ url_for('admin.delete_katalog', id=item.id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus item ini beserta seluruh gambarnya?');" style="display: inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus Item">
+                      🗑️
+                    </button>
+                  </form>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+      <div style="font-size: 3.5rem; margin-bottom: 1rem;">{{ '🔍' if search_query else '📦' }}</div>
+      <h2 style="margin-bottom: 0.5rem;">{{ 'Item Tidak Ditemukan' if search_query else 'Katalog Masih Kosong' }}</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+        {% if search_query %}
+          Tidak ada item katalog yang sesuai dengan kata kunci "<strong>{{ search_query }}</strong>".
+        {% else %}
+          Belum ada item katalog yang diinputkan ke dalam sistem. Silakan administrator menambahkan data aset pertama.
+        {% endif %}
+      </p>
+      {% if search_query %}
+        <a href="{{ url_for('katalog.list_katalog') }}" class="btn btn-secondary">Tampilkan Semua Item</a>
+      {% elif current_user.role == 'admin' %}
+        <a href="{{ url_for('admin.create_katalog') }}" class="btn btn-primary">+ Tambah Item Pertama</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

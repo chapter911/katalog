@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Laboratorium Peralatan Diagnostik{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.4">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
+</head>
+<body data-mode="{% block page_mode %}default{% endblock %}">
+
+  <!-- Main Navigation -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="{{ url_for('katalog.list_katalog') if current_user else url_for('auth.login') }}" class="nav-brand">
+        <span class="nav-brand-badge">🔬</span>
+        <span>Laboratorium Peralatan Diagnostik</span>
+      </a>
+
+      {% if current_user %}
+        <nav>
+          <ul class="nav-menu">
+            <li>
+              <a href="{{ url_for('katalog.list_katalog') }}" class="nav-link {% if request.endpoint == 'katalog.list_katalog' %}active{% endif %}">
+                Daftar Katalog
+              </a>
+            </li>
+
+            {% if current_user.role == 'admin' %}
+              <li>
+                <a href="{{ url_for('admin.create_katalog') }}" class="nav-link {% if request.endpoint == 'admin.create_katalog' %}active{% endif %}">
+                  + Input Item
+                </a>
+              </li>
+              <li>
+                <a href="{{ url_for('admin.list_mahasiswa') }}" class="nav-link {% if 'mahasiswa' in request.endpoint %}active{% endif %}">
+                  Kelola Mahasiswa
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+
+        <div class="nav-user">
+          <div class="user-dropdown-container">
+            <button type="button" class="user-dropdown-toggle" id="userDropdownToggle" aria-expanded="false" aria-haspopup="true">
+              <span class="role-badge {{ current_user.role }}">{{ current_user.role }}</span>
+              <span style="font-weight: 600;">{{ current_user.nama }}</span>
+              <span style="color: var(--text-dim); font-size: 0.8rem;">({{ current_user.identifier }})</span>
+              <span class="dropdown-chevron">▼</span>
+            </button>
+            <div class="user-dropdown-menu" id="userDropdownMenu">
+              <div class="user-dropdown-header">
+                <div style="font-weight: 600; color: #ffffff; font-size: 0.9rem;">{{ current_user.nama }}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">
+                  {{ current_user.role.title() }} &bull; {{ current_user.identifier }}
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="{{ url_for('auth.update_password') }}" class="dropdown-item">
+                <span>🔑</span>
+                <span>Ubah Password</span>
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="{{ url_for('auth.logout') }}" class="dropdown-item dropdown-item-danger">
+                <span>🚪</span>
+                <span>Logout Keluar</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm">Login Masuk</a>
+        </div>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- Notification Container (Strict Anti-Duplication via Flash & JS) -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="notification-wrapper" id="notification-wrapper">
+        {% for category, message in messages %}
+          <div class="toast-alert {{ category }}" role="alert">
+            <div class="toast-content">{{ message }}</div>
+            <button type="button" class="toast-close" aria-label="Tutup">&times;</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    {% if error_code %}
+      <div class="container" style="text-align: center; padding: 4rem 1rem;">
+        <h1 style="font-size: 3.5rem; margin-bottom: 1rem; color: var(--accent);">{{ error_code }}</h1>
+        <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 2rem;">{{ error_message }}</p>
+        <a href="{{ url_for('katalog.list_katalog') }}" class="btn btn-primary">Kembali ke Katalog</a>
+      </div>
+    {% else %}
+      {% block content %}{% endblock %}
+    {% endif %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Laboratorium Peralatan Diagnostik &bull; Ditenagai oleh Python Flask & MySQL (phpMyAdmin)</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}?v=1.4"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

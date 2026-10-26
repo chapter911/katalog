@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ 'Edit Mahasiswa' if mode == 'edit' else 'Tambah Mahasiswa Baru' }} &bull; Laboratorium Peralatan Diagnostik
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 650px;">
+  <!-- Header -->
+  <div style="margin-bottom: 2rem;">
+    <a href="{{ url_for('admin.list_mahasiswa') }}" class="btn btn-secondary btn-sm" style="margin-bottom: 1rem;">
+      &larr; Kembali ke Daftar Mahasiswa
+    </a>
+    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">
+      {{ 'Edit Data Mahasiswa' if mode == 'edit' else 'Tambah Mahasiswa Baru' }}
+    </h1>
+    <p style="color: var(--text-muted);">
+      {{ 'Perbarui informasi profil dan kata sandi login mahasiswa.' if mode == 'edit' else 'Daftarkan akun mahasiswa baru agar dapat mengakses katalog.' }}
+    </p>
+  </div>
+
+  <div class="card">
+    <form method="POST">
+      
+      <!-- NIM -->
+      <div class="form-group">
+        <label class="form-label required" for="nim">Nomor Induk Mahasiswa (NIM)</label>
+        <input 
+          type="text" 
+          id="nim" 
+          name="nim" 
+          class="form-control" 
+          placeholder="Contoh: 2024001" 
+          value="{{ student.nim or '' }}" 
+          required 
+          autofocus
+        >
+        <p class="form-hint">NIM digunakan oleh mahasiswa untuk login ke aplikasi.</p>
+      </div>
+
+      <!-- Nama Lengkap -->
+      <div class="form-group">
+        <label class="form-label required" for="nama">Nama Lengkap</label>
+        <input 
+          type="text" 
+          id="nama" 
+          name="nama" 
+          class="form-control" 
+          placeholder="Contoh: Ahmad Fauzi" 
+          value="{{ student.nama or '' }}" 
+          required
+        >
+      </div>
+
+      <!-- Jurusan & Angkatan (Grid) -->
+      <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label required" for="jurusan">Jurusan / Program Studi</label>
+          <input 
+            type="text" 
+            id="jurusan" 
+            name="jurusan" 
+            class="form-control" 
+            placeholder="Contoh: Teknik Informatika" 
+            value="{{ student.jurusan or '' }}" 
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label required" for="angkatan">Tahun Angkatan</label>
+          <input 
+            type="text" 
+            id="angkatan" 
+            name="angkatan" 
+            class="form-control" 
+            placeholder="Contoh: 2024" 
+            value="{{ student.angkatan or '' }}" 
+            required
+          >
+        </div>
+      </div>
+
+      <!-- Email (Opsional) -->
+      <div class="form-group">
+        <label class="form-label" for="email">Alamat Email (Opsional)</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          class="form-control" 
+          placeholder="Contoh: ahmad@kampus.ac.id" 
+          value="{{ student.email or '' }}"
+        >
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label class="form-label {{ 'required' if mode == 'create' else '' }}" for="password">
+          Kata Sandi (Password)
+        </label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          class="form-control" 
+          placeholder="{{ 'Masukkan kata sandi untuk login' if mode == 'create' else 'Biarkan kosong jika tidak ingin mengubah password' }}" 
+          {{ 'required' if mode == 'create' else '' }}
+        >
+        {% if mode == 'edit' %}
+          <p class="form-hint">Isi bidang ini hanya jika ingin mereset password mahasiswa.</p>
+        {% endif %}
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle);">
+        <a href="{{ url_for('admin.list_mahasiswa') }}" class="btn btn-secondary">
+          Batal
+        </a>
+        <button type="submit" class="btn btn-primary">
+          💾 {{ 'Simpan Perubahan' if mode == 'edit' else 'Daftarkan Mahasiswa' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}

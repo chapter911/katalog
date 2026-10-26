@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ 'Edit Item Katalog' if mode == 'edit' else 'Input Item Katalog Baru' }} &bull; Laboratorium Peralatan Diagnostik
+{% endblock %}
+
+{% block page_mode %}{{ mode }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+  <!-- Header -->
+  <div style="margin-bottom: 2rem;">
+    <a href="{{ url_for('katalog.list_katalog') }}" class="btn btn-secondary btn-sm" style="margin-bottom: 1rem;">
+      &larr; Kembali ke Katalog
+    </a>
+    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">
+      {{ 'Edit Item Katalog' if mode == 'edit' else 'Input Item Katalog Baru' }}
+    </h1>
+    <p style="color: var(--text-muted);">
+      {{ 'Perbarui informasi judul, deskripsi, dan foto item katalog.' if mode == 'edit' else 'Masukkan detail aset baru beserta foto dokumentasi (minimal 1, maksimal 5).' }}
+    </p>
+  </div>
+
+  <div class="card">
+    <form method="POST" enctype="multipart/form-data" id="katalogForm">
+      
+      <!-- Judul -->
+      <div class="form-group">
+        <label class="form-label required" for="judul">Judul Item Katalog</label>
+        <input 
+          type="text" 
+          id="judul" 
+          name="judul" 
+          class="form-control" 
+          placeholder="Contoh: Laptop Workstation Lab Multimedia" 
+          value="{{ item.judul if mode == 'edit' else (judul or '') }}" 
+          required
+        >
+      </div>
+
+      <!-- Deskripsi -->
+      <div class="form-group">
+        <label class="form-label required" for="deskripsi">Deskripsi Lengkap</label>
+        <textarea 
+          id="deskripsi" 
+          name="deskripsi" 
+          class="form-control" 
+          rows="5" 
+          placeholder="Tuliskan spesifikasi detail, kondisi, dan lokasi penempatan aset..." 
+          required
+        >{{ item.deskripsi if mode == 'edit' else (deskripsi or '') }}</textarea>
+      </div>
+
+      <!-- Upload Foto & Thumbnail Selector -->
+      <div class="form-group" style="margin-top: 2rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+          <label class="form-label required" style="margin-bottom: 0;">
+            Foto Dokumentasi (Minimal 1, Maksimal 5)
+          </label>
+          <span id="imageCountIndicator" style="font-size: 0.825rem; font-weight: 600;">
+            Total Gambar: 0 / 5
+          </span>
+        </div>
+        <p class="form-hint" style="margin-bottom: 1rem;">
+          Format: PNG, JPG, JPEG, WEBP. Klik <strong>"Jadikan Thumbnail"</strong> pada salah satu gambar untuk menentukan foto sampul utama yang ditampilkan pada daftar.
+        </p>
+
+        <!-- Dropzone -->
+        <div class="upload-dropzone" id="uploadDropzone">
+          <input 
+            type="file" 
+            id="katalogFileInput" 
+            name="{{ 'new_images' if mode == 'edit' else 'images' }}" 
+            multiple 
+            accept="image/*" 
+            style="display: none;"
+          >
+          <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📤</div>
+          <div style="font-weight: 600; color: #ffffff; margin-bottom: 0.25rem;">
+            Klik di sini atau Seret file foto ke area ini
+          </div>
+          <div style="font-size: 0.85rem; color: var(--text-dim);">
+            Mendukung pemilihan banyak file foto sekaligus (hingga 5 foto)
+          </div>
+        </div>
+
+        <!-- Hidden Input to store selected thumbnail -->
+        {% if mode == 'edit' %}
+          {% set active_thumb = '' %}
+          {% for img in existing_images %}
+            {% if img.is_thumbnail %}
+              {% set active_thumb = 'existing_' ~ img.id %}
+            {% endif %}
+          {% endfor %}
+          <input type="hidden" name="chosen_thumbnail" id="chosenThumbnailInput" value="{{ active_thumb }}">
+        {% else %}
+          <input type="hidden" name="thumbnail_index" id="chosenThumbnailInput" value="0">
+        {% endif %}
+
+        <!-- Previews Grid -->
+        <div class="upload-previews" id="imagePreviews">
+          {% if mode == 'edit' and existing_images %}
+            {% for img in existing_images %}
+              <div 
+                class="preview-card {% if img.is_thumbnail %}is-thumbnail{% endif %}" 
+                data-type="existing" 
+                data-id="{{ img.id }}"
+              >
+                <button type="button" class="btn-remove-preview" title="Hapus gambar ini">&times;</button>
+                <div class="preview-img-wrap">
+                  <img src="{{ url_for('static', filename='uploads/katalog/' + img.file_path) }}" alt="Foto Tersimpan">
+                </div>
+                <div class="preview-actions">
+                  <button type="button" class="btn-set-thumb" data-thumb-target="existing_{{ img.id }}">
+                    {{ '⭐ Thumbnail Utama' if img.is_thumbnail else 'Jadikan Thumbnail' }}
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle);">
+        <a href="{{ url_for('katalog.list_katalog') }}" class="btn btn-secondary">
+          Batal
+        </a>
+        <button type="submit" class="btn btn-primary" id="btnSubmitForm">
+          💾 {{ 'Simpan Perubahan' if mode == 'edit' else 'Tambah ke Katalog' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}

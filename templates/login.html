@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Masuk &bull; Laboratorium Peralatan Diagnostik{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-header">
+      <div style="display: inline-flex; align-items: center; justify-content: center; width: 3.5rem; height: 3.5rem; border-radius: var(--radius-lg); background: var(--accent-gradient); font-size: 1.8rem; margin-bottom: 1rem; box-shadow: var(--shadow-glow);">
+        🔬
+      </div>
+      <h1>Selamat Datang</h1>
+      <p>Masuk menggunakan Username (Admin) atau NIM (Mahasiswa)</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
+      <div class="form-group">
+        <label class="form-label required" for="identifier">Username / NIM</label>
+        <input 
+          type="text" 
+          id="identifier" 
+          name="identifier" 
+          class="form-control" 
+          placeholder="Contoh: admin atau 2024001" 
+          value="{{ identifier or '' }}" 
+          required 
+          autofocus
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required" for="password">Password</label>
+        <div style="position: relative;">
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-control" 
+            placeholder="Masukkan kata sandi" 
+            required
+            style="padding-right: 2.75rem;"
+          >
+          <button 
+            type="button" 
+            id="togglePassword" 
+            aria-label="Lihat Password"
+            style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.1rem; padding: 0.25rem;"
+          >
+            👁️
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem;">
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          Masuk ke Aplikasi
+        </button>
+      </div>
+    </form>
+
+    <!-- Quick Credentials Helper for convenient testing -->
+    <div class="login-credentials-box">
+      <div style="font-weight: 600; color: #ffffff; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+        <span>Akun Demo Pengujian:</span>
+        <span style="font-size: 0.75rem; color: var(--accent);">Klik untuk mengisi</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+        <button type="button" class="btn btn-secondary btn-sm" style="justify-content: space-between; font-weight: normal; padding: 0.4rem 0.65rem;" onclick="fillCredentials('admin', 'admin123')">
+          <span>👑 <strong>Admin:</strong> <code>admin</code></span>
+          <span>Sandi: <code>admin123</code></span>
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" style="justify-content: space-between; font-weight: normal; padding: 0.4rem 0.65rem;" onclick="fillCredentials('2024001', 'mhs123')">
+          <span>🎓 <strong>Mahasiswa:</strong> <code>2024001</code></span>
+          <span>Sandi: <code>mhs123</code></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Toggle password visibility
+  const toggleBtn = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('password');
+  if (toggleBtn && passwordInput) {
+    toggleBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      toggleBtn.innerHTML = isPassword ? '🔒' : '👁️';
+    });
+  }
+
+  // Quick fill demo credentials
+  function fillCredentials(id, pass) {
+    document.getElementById('identifier').value = id;
+    document.getElementById('password').value = pass;
+  }
+</script>
+{% endblock %}
