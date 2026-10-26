@@ -11,6 +11,7 @@ from routes.admin import admin_bp
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    app.url_map.strict_slashes = False
 
     # Ensure upload folder exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -27,6 +28,11 @@ def create_app():
             'current_user': get_current_user(),
             'app_name': 'Laboratorium Peralatan Diagnostik'
         }
+
+    # Favicon handler to avoid 404 noise
+    @app.route('/favicon.ico')
+    def favicon():
+        return ('', 204)
 
     # Error Handlers
     @app.errorhandler(404)

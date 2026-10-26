@@ -33,8 +33,14 @@ def remove_file_from_disk(filename):
             pass
 
 # ==========================================
-# KATALOG MANAGEMENT (Admin only)
+# ADMIN DASHBOARD & KATALOG MANAGEMENT
 # ==========================================
+
+@admin_bp.route('')
+@admin_bp.route('/')
+@admin_required
+def admin_dashboard():
+    return redirect(url_for('admin.list_mahasiswa'))
 
 @admin_bp.route('/katalog/create', methods=['GET', 'POST'])
 @admin_required

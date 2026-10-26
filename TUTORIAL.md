@@ -300,23 +300,22 @@ Jika saat membuka domain muncul tulisan:
 
 Lakukan langkah diagnosis & penanganan berikut:
 
-1. **Unggah Berkas [passenger_wsgi.py](file:///Users/agung_kesuma/katalog/passenger_wsgi.py) Terbaru:**
-   Versi terbaru [passenger_wsgi.py](file:///Users/agung_kesuma/katalog/passenger_wsgi.py) dilengkapi `os.execl` yang otomatis memaksa LiteSpeed/Passenger beralih dari Python bawaan server ke Python 3.10 milik virtualenv Anda.
+1. **Gunakan Berkas [passenger_wsgi.py](file:///Users/agung_kesuma/katalog/passenger_wsgi.py) Bersih & Ringan:**
+   Pastikan berkas [passenger_wsgi.py](file:///Users/agung_kesuma/katalog/passenger_wsgi.py) tidak memuat perintah `os.execl` (karena dapat memutus socket LiteSpeed dan memicu error 503). Cukup gunakan konfigurasi path direktori kerja dan import `application` langsung.
 2. **Uji Jalankan `passenger_wsgi.py` via Terminal cPanel:**
-   Buka **Terminal** cPanel, lalu ketik perintah berikut untuk melihat pesan error tersembunyi:
+   Buka **Terminal** cPanel, lalu ketik perintah berikut untuk memastikan aplikasi tidak memiliki kendala modul atau sintaks:
    ```bash
    cd /home/agun9011/public_html/diagnostik.agungj.com
    /home/agun9011/virtualenv/public_html/diagnostik.agungj.com/3.10/bin/python3 passenger_wsgi.py
    ```
-   - Jika berhasil tanpa output error (bersih), berarti skrip siap jalan!
-   - Jika terdapat error (misal modul belum terpasang atau database salah), rincian error akan langsung muncul di terminal.
+   - Jika berhasil tanpa output error (bersih), berarti skrip 100% siap jalan!
 3. **Cek Berkas Log Error di File Manager:**
-   Buka folder aplikasi di File Manager cPanel, periksa apakah terdapat berkas:
-   - `stderr.log`
-   - `error_log`
-   - `passenger_startup_error.log`
-   Buka atau baca isinya untuk melihat baris yang menyebabkan error.
-4. **Restart Aplikasi** di halaman **Setup Python App** cPanel setelah perbaikan.
+   Buka folder aplikasi di File Manager cPanel, periksa berkas `passenger_error.log` atau `stderr.log`.
+   - *Kasus TypeError argument of type 'NoneType' is not iterable*: Terjadi jika `request.endpoint` bernilai `None` saat halaman 404/500 dipanggil. Masalah ini telah diatasi di [templates/base.html](file:///Users/agung_kesuma/katalog/templates/base.html) dan [app.py](file:///Users/agung_kesuma/katalog/app.py).
+4. **Unggah Pembaruan Berkas:**
+   Pastikan berkas [passenger_wsgi.py](file:///Users/agung_kesuma/katalog/passenger_wsgi.py), [templates/base.html](file:///Users/agung_kesuma/katalog/templates/base.html), [app.py](file:///Users/agung_kesuma/katalog/app.py), [routes/katalog.py](file:///Users/agung_kesuma/katalog/routes/katalog.py), dan [routes/admin.py](file:///Users/agung_kesuma/katalog/routes/admin.py) telah diunggah ke server (fitur `strict_slashes=False` telah diaktifkan agar URL dengan tanda garis miring di akhir seperti `/katalog/` tidak lagi 404).
+5. **Restart Aplikasi** di halaman **Setup Python App** cPanel setelah pembaruan.
+
 
 
 

@@ -11,6 +11,7 @@ def index():
     return redirect(url_for('auth.login'))
 
 @katalog_bp.route('/katalog')
+@katalog_bp.route('/katalog/')
 @login_required
 def list_katalog():
     search_query = request.args.get('q', '').strip()

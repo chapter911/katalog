@@ -21,19 +21,19 @@
         <nav>
           <ul class="nav-menu">
             <li>
-              <a href="{{ url_for('katalog.list_katalog') }}" class="nav-link {% if request.endpoint == 'katalog.list_katalog' %}active{% endif %}">
+              <a href="{{ url_for('katalog.list_katalog') }}" class="nav-link {% if request.endpoint and request.endpoint == 'katalog.list_katalog' %}active{% endif %}">
                 Daftar Katalog
               </a>
             </li>
 
             {% if current_user.role == 'admin' %}
               <li>
-                <a href="{{ url_for('admin.create_katalog') }}" class="nav-link {% if request.endpoint == 'admin.create_katalog' %}active{% endif %}">
+                <a href="{{ url_for('admin.create_katalog') }}" class="nav-link {% if request.endpoint and request.endpoint == 'admin.create_katalog' %}active{% endif %}">
                   + Input Item
                 </a>
               </li>
               <li>
-                <a href="{{ url_for('admin.list_mahasiswa') }}" class="nav-link {% if 'mahasiswa' in request.endpoint %}active{% endif %}">
+                <a href="{{ url_for('admin.list_mahasiswa') }}" class="nav-link {% if request.endpoint and 'mahasiswa' in request.endpoint %}active{% endif %}">
                   Kelola Mahasiswa
                 </a>
               </li>
